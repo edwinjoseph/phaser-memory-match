@@ -4,6 +4,7 @@ export default class Game extends Phaser.Scene
 {
     player!: Phaser.Physics.Arcade.Sprite
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys
+    boxGroup!: Phaser.Physics.Arcade.StaticGroup
 
 	constructor()
 	{
@@ -20,8 +21,14 @@ export default class Game extends Phaser.Scene
         console.log('game start')
 
         const { width, height } = this.scale
-        this.player = this.physics.add.sprite(width * .5, height * .5, 'base')
+        this.player = this.physics.add.sprite(width * .5, (height * .5) - 74, 'base')
+            .setSize(40, 16)
+            .setOffset(12, 40)
             .play('down-idle')
+
+        this.createBoxes()
+
+        this.physics.add.collider(this.player, this.boxGroup)
     }
 
     update()
@@ -44,6 +51,31 @@ export default class Game extends Phaser.Scene
             const direction = this.player.anims.currentAnim.key.split('-').shift()
             this.player.setVelocity(0, 0)
             this.player.play(`${direction}-idle`, true)
+        }
+
+        this.children.each(item => {
+            const child = item as Phaser.Physics.Arcade.Sprite
+            child.setDepth(child.y)
+        })
+    }
+
+    createBoxes()
+    {
+        this.boxGroup = this.physics.add.staticGroup();
+
+        const { width, height } = this.scale;
+        
+        let x = .25
+        let y = .25
+
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                const xPos = x * (row + 1)
+                const yPos = y * (col + 1)
+                this.boxGroup.get(width * xPos, height * yPos, 'base', 19)
+                    .setSize(64, 32)
+                    .setOffset(0, 32)
+            }
         }
     }
 }
