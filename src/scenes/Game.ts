@@ -34,6 +34,17 @@ export default class Game extends Phaser.Scene
 
     update()
     {
+        this.handlePlayerMovement()
+
+        this.children.each(item => {
+            const child = item as Phaser.Physics.Arcade.Sprite
+            child.setDepth(child.y)
+        })
+
+        this.updateActiveBox()
+    }
+
+    handlePlayerMovement() {
         const speed = 200
         
         if (this.cursors.up?.isDown) {
@@ -53,13 +64,6 @@ export default class Game extends Phaser.Scene
             this.player.setVelocity(0, 0)
             this.player.play(`${direction}-idle`, true)
         }
-
-        this.children.each(item => {
-            const child = item as Phaser.Physics.Arcade.Sprite
-            child.setDepth(child.y)
-        })
-
-        this.updateActiveBox()
     }
 
     createBoxes()
