@@ -5,6 +5,7 @@ export default class Game extends Phaser.Scene
     player!: Phaser.Physics.Arcade.Sprite
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys
     boxGroup!: Phaser.Physics.Arcade.StaticGroup
+    activeBox!: Phaser.Physics.Arcade.Sprite | undefined
 
 	constructor()
 	{
@@ -28,7 +29,7 @@ export default class Game extends Phaser.Scene
 
         this.createBoxes()
 
-        this.physics.add.collider(this.player, this.boxGroup)
+        this.physics.add.collider(this.player, this.boxGroup, this.handlePlayerBoxCollide, undefined, this)
     }
 
     update()
@@ -57,6 +58,8 @@ export default class Game extends Phaser.Scene
             const child = item as Phaser.Physics.Arcade.Sprite
             child.setDepth(child.y)
         })
+
+        this.updateActiveBox()
     }
 
     createBoxes()
@@ -77,5 +80,37 @@ export default class Game extends Phaser.Scene
                     .setOffset(0, 32)
             }
         }
+    }
+
+    handlePlayerBoxCollide(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject)
+    {
+        const player = obj1 as Phaser.Physics.Arcade.Sprite
+        const box = obj2 as Phaser.Physics.Arcade.Sprite
+
+        if (this.activeBox) {
+            return
+        }
+
+        this.activeBox = box
+        this.activeBox.setFrame(6)
+    }
+
+    updateActiveBox() 
+    {
+        if (!this.activeBox) {
+            return
+        }
+
+        const distance = Phaser.Math.Distance.Between(
+            this.player.x, this.player.y,
+            this.activeBox.x, this.activeBox.y,
+        )
+
+        if (distance < 64) {
+            return
+        }
+        
+        this.activeBox.setFrame(19)
+        this.activeBox = undefined
     }
 }
