@@ -1,5 +1,11 @@
 import Phaser from 'phaser'
 
+const level = [
+    [1, 4, 0],
+    [2, 2, 3],
+    [3, 1, 4],
+]
+
 export default class Game extends Phaser.Scene
 {
     player!: Phaser.Physics.Arcade.Sprite
@@ -64,6 +70,12 @@ export default class Game extends Phaser.Scene
             this.player.setVelocity(0, 0)
             this.player.play(`${direction}-idle`, true)
         }
+
+        const spacePressed = Phaser.Input.Keyboard.JustUp(this.cursors.space!)
+
+        if (spacePressed && this.activeBox) {
+            this.openBox(this.activeBox)
+        }
     }
 
     createBoxes()
@@ -75,13 +87,15 @@ export default class Game extends Phaser.Scene
         let x = .25
         let y = .25
 
-        for (let row = 0; row < 3; row++) {
-            for (let col = 0; col < 3; col++) {
-                const xPos = x * (row + 1)
-                const yPos = y * (col + 1)
-                this.boxGroup.get(width * xPos, height * yPos, 'base', 19)
-                    .setSize(64, 32)
+        for (let row = 0; row < level.length; row++) {
+            for (let col = 0; col < level[row].length; col++) {
+                const xPos = width * (x * (col + 1))
+                const yPos = height * (y * (row + 1))
+                const box = this.boxGroup.get(xPos, yPos, 'base', 19) as Phaser.Physics.Arcade.Sprite
+
+                box.setSize(64, 32)
                     .setOffset(0, 32)
+                    .setData('itemType', level[row][col])
             }
         }
     }
@@ -97,6 +111,12 @@ export default class Game extends Phaser.Scene
 
         this.activeBox = box
         this.activeBox.setFrame(6)
+    }
+
+    openBox(box: Phaser.Physics.Arcade.Sprite)
+    {
+        const itemType = box.getData('itemType')
+        console.log(itemType)
     }
 
     updateActiveBox() 
