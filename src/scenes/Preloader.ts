@@ -10,6 +10,21 @@ export default class Preloader extends Phaser.Scene
   preload() 
   {
     this.load.spritesheet('base', 'textures/base-tilesheet.png', { frameWidth: 64 })
+    this.load.spritesheet('boxes', 'textures/boxes-tilesheet.png', { frameWidth: 64 })
+
+    this.load.image('gorilla', 'textures/gorilla.png')
+    this.load.image('chick', 'textures/chick.png')
+    this.load.image('chicken', 'textures/chicken.png')
+    this.load.image('duck', 'textures/duck.png')
+    this.load.image('parrot', 'textures/parrot.png')
+
+    this.load.rexWebFont({
+      custom: {
+        families: ['might-makes-right-bb', 'might-makes-right-bb:n4'],
+        urls: ['https://use.typekit.net/gtg6wmw.css']
+      },
+      testString: 'testing'
+    })
   }
 
   create()
@@ -66,6 +81,15 @@ export default class Preloader extends Phaser.Scene
       }),
       frameRate: 8,
       repeat: -1
+    })
+
+    this.anims.create({
+      key: 'box-down',
+      frames: this.anims.generateFrameNumbers('boxes', {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 24,
     })
 
     this.scene.start('game')
